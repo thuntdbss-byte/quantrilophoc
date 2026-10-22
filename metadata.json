@@ -1,0 +1,6 @@
+{
+  "name": "QUẢN TRỊ LỚP HỌC THÔNG MINH - Dự bị ĐH Dân tộc Sầm Sơn",
+  "description": "Hệ thống quản trị lớp học thông minh dành cho giáo viên Nguyễn Thị Thu - Trường Dự bị Đại học Dân tộc Sầm Sơn. Quản lý lớp, học sinh, theo dõi tiến độ và biểu đồ trực quan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

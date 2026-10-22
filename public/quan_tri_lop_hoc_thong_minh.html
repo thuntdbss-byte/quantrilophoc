@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUẢN TRỊ LỚP HỌC THÔNG MINH - Dự bị ĐH Dân tộc Sầm Sơn</title>
+  <style>
+    /* Reset & Clean Base CSS (Hoạt động offline 100% không cần font ngoài) */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --bg-main: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --danger: #e11d48;
+      --danger-light: #fff1f2;
+      --radius: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      font-size: 14px;
+      min-height: 100vh;
+      display: flex;
+    }
+    /* Layout */
+    #sidebar {
+      width: 250px;
+      background: #0f172a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+      z-index: 40;
+    }
+    .brand-area {
+      padding: 20px 16px;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: bold; flex-shrink: 0;
+    }
+    .brand-text h1 { font-size: 12px; font-weight: 800; text-transform: uppercase; color: #fff; line-height: 1.2; }
+    .brand-text span { font-size: 11px; color: #60a5fa; font-weight: 600; }
+    .nav-list { list-style: none; padding: 16px 10px; flex: 1; }
+    .nav-item { margin-bottom: 4px; }
+    .nav-btn {
+      width: 100%; display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px; border-radius: 10px; border: none;
+      background: transparent; color: #94a3b8; font-size: 12px;
+      font-weight: 600; text-align: left; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: #1e293b; color: #fff; }
+    .nav-btn.active { background: var(--primary); color: #fff; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); }
+    .sidebar-footer {
+      padding: 14px; border-top: 1px solid #1e293b; background: rgba(0,0,0,0.2); font-size: 11px;
+    }
+    /* Content Area */
+    #main-content {
+      flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 100vh;
+    }
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 30;
+    }
+    .header-info h2 { font-size: 14px; font-weight: 700; color: var(--text-main); }
+    .header-info span { font-size: 11px; color: var(--primary); font-weight: 600; text-transform: uppercase; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .date-badge {
+      font-size: 12px; color: var(--text-muted); background: var(--bg-main);
+      padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+    }
+    .btn-action {
+      background: var(--primary); color: white; border: none; padding: 8px 14px;
+      border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px; transition: background 0.2s;
+    }
+    .btn-action:hover { background: var(--primary-dark); }
+    .btn-secondary {
+      background: #e2e8f0; color: #334155; border: none; padding: 8px 14px;
+      border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .btn-secondary:hover { background: #cbd5e1; }
+    /* Views */
+    .view-container { padding: 24px; max-width: 1280px; margin: 0 auto; width: 100%; }
+    .view-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    /* Stat grid */
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px;
+    }
+    .stat-card .label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .stat-card .value { font-size: 28px; font-weight: 800; color: var(--text-main); margin-top: 6px; }
+    /* Table */
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+    th { background: #f8fafc; padding: 10px 14px; border-bottom: 1px solid var(--border); color: #64748b; font-weight: 600; }
+    td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; }
+    tr:hover td { background: #f8fafc; }
+    .badge {
+      padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; display: inline-block;
+    }
+    .badge-success { background: var(--success-light); color: var(--success); }
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    /* Progress bar */
+    .progress-track { background: #e2e8f0; border-radius: 999px; height: 8px; overflow: hidden; display: flex; }
+    .progress-fill { background: var(--primary); height: 100%; transition: width 0.3s; }
+    .progress-fill.full { background: var(--success); }
+    .progress-fill.low { background: var(--warning); }
+    /* Modals */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px; z-index: 100;
+    }
+    .modal-box {
+      background: #fff; width: 100%; max-width: 520px; border-radius: 16px;
+      overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-weight: 700; font-size: 15px;
+    }
+    .modal-body { padding: 20px; max-height: 75vh; overflow-y: auto; }
+    .modal-footer {
+      padding: 14px 20px; border-top: 1px solid var(--border);
+      background: #f8fafc; display: flex; justify-content: flex-end; gap: 8px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .form-control {
+      width: 100%; padding: 8px 12px; font-size: 13px; border: 1px solid var(--border);
+      border-radius: 8px; outline: none;
+    }
+    .form-control:focus { border-color: var(--primary); ring: 2px var(--primary-light); }
+    /* Responsive */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      #sidebar { width: 100%; height: auto; }
+      .brand-area { padding: 12px; }
+      .nav-list { display: flex; overflow-x: auto; padding: 6px; }
+      .nav-btn { white-space: nowrap; padding: 8px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="brand-area">
+      <div class="brand-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>QUẢN TRỊ LỚP HỌC</h1>
+        <span>THÔNG MINH</span>
+      </div>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item"><button class="nav-btn active" onclick="switchTab('overview')">1. TỔNG QUAN</button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="switchTab('classes')">2. LỚP HỌC</button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="switchTab('students')">3. HỌC SINH</button></li>
+      <li class="nav-item"><button class="nav-btn" onclick="switchTab('progress')">4. TIẾN ĐỘ HỌC TẬP</button></li>
+    </ul>
+    <div class="sidebar-footer">
+      <div style="color: #4ade80; font-weight: 600; margin-bottom: 4px;">● Lưu trữ trên máy</div>
+      <div style="color: #94a3b8;">Dự bị ĐH Dân tộc Sầm Sơn</div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div id="main-content">
+    <header>
+      <div class="header-info">
+        <span>Trường Dự bị Đại học Dân tộc Sầm Sơn</span>
+        <h2>Giáo viên: Nguyễn Thị Thu</h2>
+      </div>
+      <div class="header-right">
+        <div class="date-badge" id="live-date">Thứ Năm, 22/10/2026</div>
+        <button class="btn-action" onclick="exportDataJson()">Sao lưu JSON</button>
+      </div>
+    </header>
+
+    <!-- Main Views Container -->
+    <main class="view-container">
+      <div id="view-content"></div>
+    </main>
+  </div>
+
+  <!-- Modal Container -->
+  <div id="modal-root"></div>
+
+  <script>
+    /* DỮ LIỆU BAN ĐẦU KHỞI TẠO */
+    const STORAGE_KEY = 'DBSS_STANDALONE_CLASSROOM_DATA_V1';
+    const DEFAULT_DATA = {
+      teacher: { name: 'Nguyễn Thị Thu', school: 'Dự bị Đại học Dân tộc Sầm Sơn' },
+      classes: [
+        { id: 'cls-1', code: 'K21-DB01', name: 'Lớp Dự bị 1 (Khối Xã hội - C00)', year: '2025 - 2026', teacher: 'Nguyễn Thị Thu', desc: 'Chuyên bồi dưỡng Văn, Sử, Địa' },
+        { id: 'cls-2', code: 'K21-DB02', name: 'Lớp Dự bị 2 (Khối Tự nhiên - A00/B00)', year: '2025 - 2026', teacher: 'Nguyễn Thị Thu', desc: 'Bồi dưỡng Toán, Lý, Hóa, Sinh' },
+        { id: 'cls-3', code: 'K21-DB03', name: 'Lớp Dự bị 3 (Khối Ngoại ngữ & D1)', year: '2025 - 2026', teacher: 'Nguyễn Thị Thu', desc: 'Tăng cường Tiếng Anh và Kỹ năng ĐH' }
+      ],
+      students: [
+        { id: 'stu-1', code: 'DBSS26-001', name: 'Lò Thị Mai', birth: '2008-04-12', gender: 'Nữ', classId: 'cls-1', status: 'Hoàn thành', notes: 'Học tập xuất sắc' },
+        { id: 'stu-2', code: 'DBSS26-002', name: 'Thào A Dũng', birth: '2008-09-20', gender: 'Nam', classId: 'cls-1', status: 'Cần hỗ trợ', notes: 'Cần phụ đạo thêm kỹ năng Atlat Địa lý' },
+        { id: 'stu-3', code: 'DBSS26-003', name: 'Hà Văn Sơn', birth: '2008-01-15', gender: 'Nam', classId: 'cls-1', status: 'Đang học', notes: 'Tiến bộ rõ rệt' },
+        { id: 'stu-4', code: 'DBSS26-004', name: 'Vi Thị Hoa', birth: '2008-11-05', gender: 'Nữ', classId: 'cls-1', status: 'Hoàn thành', notes: 'Nộp bài rất đúng hạn' },
+        { id: 'stu-5', code: 'DBSS26-005', name: 'Bùi Văn Minh', birth: '2008-06-18', gender: 'Nam', classId: 'cls-1', status: 'Đang học', notes: 'Nắm chắc kiến thức cơ bản' },
+        { id: 'stu-6', code: 'DBSS26-006', name: 'Triệu Thị Yến', birth: '2008-03-22', gender: 'Nữ', classId: 'cls-2', status: 'Hoàn thành', notes: 'Điểm Toán tuyệt đối' },
+        { id: 'stu-7', code: 'DBSS26-007', name: 'Đinh Văn Long', birth: '2008-07-30', gender: 'Nam', classId: 'cls-2', status: 'Đang học', notes: 'Chăm chỉ làm bài tập' },
+        { id: 'stu-8', code: 'DBSS26-008', name: 'Nông Thị Thuận', birth: '2008-12-14', gender: 'Nữ', classId: 'cls-2', status: 'Cần hỗ trợ', notes: 'Cần củng cố phản ứng oxi hóa khử' },
+        { id: 'stu-9', code: 'DBSS26-009', name: 'Sùng A Súa', birth: '2008-05-08', gender: 'Nam', classId: 'cls-2', status: 'Đang học', notes: 'Kỹ năng thực hành tốt' },
+        { id: 'stu-10', code: 'DBSS26-010', name: 'Hoàng Thị Liên', birth: '2008-08-25', gender: 'Nữ', classId: 'cls-2', status: 'Hoàn thành', notes: 'Tư duy logic nhạy bén' },
+        { id: 'stu-11', code: 'DBSS26-011', name: 'Lương Văn Hùng', birth: '2008-02-10', gender: 'Nam', classId: 'cls-3', status: 'Đang học', notes: 'Phát âm tiếng Anh tốt' },
+        { id: 'stu-12', code: 'DBSS26-012', name: 'Cầm Thị Ngân', birth: '2008-10-19', gender: 'Nữ', classId: 'cls-3', status: 'Hoàn thành', notes: 'Thuyết trình ấn tượng' },
+        { id: 'stu-13', code: 'DBSS26-013', name: 'Phan Văn Đức', birth: '2008-12-03', gender: 'Nam', classId: 'cls-3', status: 'Cần hỗ trợ', notes: 'Quá hạn nộp bài từ vựng' },
+        { id: 'stu-14', code: 'DBSS26-014', name: 'Quách Thị Linh', birth: '2008-04-05', gender: 'Nữ', classId: 'cls-3', status: 'Đang học', notes: 'Nghe nói tiếng Anh khá' },
+        { id: 'stu-15', code: 'DBSS26-015', name: 'Trịnh Bá Cường', birth: '2008-07-17', gender: 'Nam', classId: 'cls-3', status: 'Đang học', notes: 'Tham gia sôi nổi' }
+      ],
+      tasks: [
+        {
+          id: 'tsk-1', title: 'Chuyên đề: Phương pháp đọc hiểu & Nghị luận văn học', subject: 'Ngữ văn',
+          classId: 'cls-1', date: '2026-10-01', due: '2026-10-15',
+          progress: {
+            'stu-1': { percent: 100, status: 'Hoàn thành' },
+            'stu-2': { percent: 45, status: 'Cần hỗ trợ' },
+            'stu-3': { percent: 85, status: 'Đang thực hiện' },
+            'stu-4': { percent: 100, status: 'Hoàn thành' },
+            'stu-5': { percent: 75, status: 'Đang thực hiện' }
+          }
+        },
+        {
+          id: 'tsk-2', title: 'Chuyên đề: Khảo sát hàm số và Cực trị toán học', subject: 'Toán học',
+          classId: 'cls-2', date: '2026-10-05', due: '2026-10-20',
+          progress: {
+            'stu-6': { percent: 100, status: 'Hoàn thành' },
+            'stu-7': { percent: 80, status: 'Đang thực hiện' },
+            'stu-8': { percent: 40, status: 'Cần hỗ trợ' },
+            'stu-9': { percent: 85, status: 'Đang thực hiện' },
+            'stu-10': { percent: 100, status: 'Hoàn thành' }
+          }
+        },
+        {
+          id: 'tsk-3', title: 'Thuyết trình Tiếng Anh: Bản sắc văn hóa các dân tộc', subject: 'Tiếng Anh',
+          classId: 'cls-3', date: '2026-10-02', due: '2026-10-18',
+          progress: {
+            'stu-11': { percent: 80, status: 'Đang thực hiện' },
+            'stu-12': { percent: 100, status: 'Hoàn thành' },
+            'stu-13': { percent: 30, status: 'Cần hỗ trợ' },
+            'stu-14': { percent: 85, status: 'Đang thực hiện' },
+            'stu-15': { percent: 75, status: 'Đang thực hiện' }
+          }
+        }
+      ]
+    };
+
+    let appData = loadData();
+    let currentTab = 'overview';
+
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    }
+
+    function getStudentProgress(studentId) {
+      const studentTasks = appData.tasks.filter(t => t.progress && t.progress[studentId]);
+      if (studentTasks.length === 0) return null;
+      const sum = studentTasks.reduce((acc, t) => acc + (t.progress[studentId].percent || 0), 0);
+      return Math.round(sum / studentTasks.length);
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.nav-btn').forEach((b, idx) => {
+        b.classList.toggle('active', ['overview', 'classes', 'students', 'progress'][idx] === tab);
+      });
+      render();
+    }
+
+    function render() {
+      const root = document.getElementById('view-content');
+      if (currentTab === 'overview') renderOverview(root);
+      else if (currentTab === 'classes') renderClasses(root);
+      else if (currentTab === 'students') renderStudents(root);
+      else if (currentTab === 'progress') renderProgress(root);
+    }
+
+    /* 1. TỔNG QUAN */
+    function renderOverview(root) {
+      const totalClasses = appData.classes.length;
+      const totalStudents = appData.students.length;
+      const completedStudents = appData.students.filter(s => s.status === 'Hoàn thành').length;
+      const needSupportStudents = appData.students.filter(s => s.status === 'Cần hỗ trợ').length;
+
+      root.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="label">Tổng số lớp học</div>
+            <div class="value">${totalClasses}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Tổng số học sinh</div>
+            <div class="value">${totalStudents}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Hoàn thành mục tiêu</div>
+            <div class="value" style="color: var(--success);">${completedStudents}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Cần giáo viên hỗ trợ</div>
+            <div class="value" style="color: var(--danger);">${needSupportStudents}</div>
+          </div>
+        </div>
+
+        <div class="view-card">
+          <h3 style="font-size: 15px; font-weight: 700; margin-bottom: 16px;">Tiến độ trung bình theo từng lớp</h3>
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            ${appData.classes.map(c => {
+              const studentsInClass = appData.students.filter(s => s.classId === c.id);
+              let avg = 0;
+              const progs = studentsInClass.map(s => getStudentProgress(s.id)).filter(p => p !== null);
+              if (progs.length > 0) avg = Math.round(progs.reduce((a, b) => a + b, 0) / progs.length);
+              return `
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                    <span style="font-weight: 600;">${c.code} - ${c.name} (${studentsInClass.length} HS)</span>
+                    <span style="font-weight: 700; color: var(--primary);">${avg}%</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill ${avg === 100 ? 'full' : avg < 50 ? 'low' : ''}" style="width: ${avg}%;"></div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    /* 2. LỚP HỌC */
+    function renderClasses(root) {
+      root.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 16px; font-weight: 700;">Quản lý danh sách lớp học (${appData.classes.length})</h3>
+          <button class="btn-action" onclick="showAddClassModal()">+ Thêm lớp học mới</button>
+        </div>
+        <div class="view-card" style="padding: 0; overflow: hidden;">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã lớp</th>
+                <th>Tên lớp</th>
+                <th>Năm học</th>
+                <th>Giáo viên phụ trách</th>
+                <th>Sĩ số</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${appData.classes.map(c => {
+                const count = appData.students.filter(s => s.classId === c.id).length;
+                return `
+                  <tr>
+                    <td style="font-weight: 700; color: var(--primary);">${c.code}</td>
+                    <td style="font-weight: 600;">${c.name}</td>
+                    <td>${c.year}</td>
+                    <td>${c.teacher}</td>
+                    <td><b>${count}</b> học sinh</td>
+                    <td>
+                      <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deleteClass('${c.id}')">Xóa</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    /* 3. HỌC SINH */
+    function renderStudents(root) {
+      root.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+          <h3 style="font-size: 16px; font-weight: 700;">Danh sách học sinh (${appData.students.length})</h3>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" onclick="exportCsvStudents()">Xuất CSV</button>
+            <button class="btn-action" onclick="showAddStudentModal()">+ Thêm học sinh</button>
+          </div>
+        </div>
+        <div class="view-card" style="padding: 0; overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã số</th>
+                <th>Họ và tên</th>
+                <th>Lớp</th>
+                <th>Tiến độ</th>
+                <th>Trạng thái</th>
+                <th>Ghi chú giáo viên</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${appData.students.map((s, idx) => {
+                const c = appData.classes.find(cl => cl.id === s.classId);
+                const prog = getStudentProgress(s.id);
+                const badgeClass = s.status === 'Hoàn thành' ? 'badge-success' : s.status === 'Cần hỗ trợ' ? 'badge-danger' : 'badge-primary';
+                return `
+                  <tr>
+                    <td>${idx + 1}</td>
+                    <td style="font-weight: 700; color: var(--primary);">${s.code}</td>
+                    <td style="font-weight: 600;">${s.name}</td>
+                    <td>${c ? c.code : 'Chưa phân lớp'}</td>
+                    <td style="min-width: 120px;">
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <div class="progress-track" style="flex: 1;">
+                          <div class="progress-fill ${prog === 100 ? 'full' : ''}" style="width: ${prog || 0}%;"></div>
+                        </div>
+                        <span style="font-size: 11px; font-weight: 700;">${prog !== null ? prog + '%' : '—'}</span>
+                      </div>
+                    </td>
+                    <td><span class="badge ${badgeClass}">${s.status}</span></td>
+                    <td style="color: #64748b; font-style: italic;">${s.notes || '—'}</td>
+                    <td>
+                      <button class="btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="deleteStudent('${s.id}')">Xóa</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    /* 4. TIẾN ĐỘ HỌC TẬP */
+    function renderProgress(root) {
+      root.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 16px; font-weight: 700;">Nhiệm vụ học tập đã giao</h3>
+          <button class="btn-action" onclick="showAddTaskModal()">+ Giao nhiệm vụ mới</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          ${appData.tasks.map(t => {
+            const cls = appData.classes.find(c => c.id === t.classId);
+            return `
+              <div class="view-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                  <div>
+                    <span class="badge badge-primary">${cls ? cls.code : 'Lớp'}</span>
+                    <span class="badge badge-success" style="margin-left: 4px;">${t.subject}</span>
+                    <h4 style="font-size: 14px; font-weight: 700; margin-top: 6px;">${t.title}</h4>
+                    <p style="font-size: 12px; color: #64748b;">Hạn nộp: ${t.due || 'Không giới hạn'}</p>
+                  </div>
+                </div>
+                <div style="margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                  <span style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Tiến độ học sinh:</span>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 8px;">
+                    ${Object.entries(t.progress || {}).map(([sid, p]) => {
+                      const student = appData.students.find(s => s.id === sid);
+                      if (!student) return '';
+                      return `
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
+                          <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                            <span style="font-weight: 600;">${student.name}</span>
+                            <span style="font-weight: 700;">${p.percent}%</span>
+                          </div>
+                          <div class="progress-track" style="margin-bottom: 8px;">
+                            <div class="progress-fill ${p.percent === 100 ? 'full' : p.percent < 50 ? 'low' : ''}" style="width: ${p.percent}%;"></div>
+                          </div>
+                          <button class="btn-secondary" style="width: 100%; padding: 4px; font-size: 11px;" onclick="quickUpdateProgress('${t.id}', '${student.id}')">Cập nhật %</button>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    /* MODAL & CRUD ACTIONS */
+    function showAddClassModal() {
+      const code = prompt('Nhập mã lớp học (VD: K21-DB04):');
+      if (!code) return;
+      const name = prompt('Nhập tên lớp học:');
+      if (!name) return;
+      appData.classes.push({
+        id: 'cls-' + Date.now(),
+        code: code.trim().toUpperCase(),
+        name: name.trim(),
+        year: '2025 - 2026',
+        teacher: 'Nguyễn Thị Thu'
+      });
+      saveData();
+      render();
+    }
+
+    function deleteClass(classId) {
+      const cls = appData.classes.find(c => c.id === classId);
+      if (!cls) return;
+      const count = appData.students.filter(s => s.classId === classId).length;
+      if (!confirm(`Xác nhận xóa lớp ${cls.name}? ${count} học sinh thuộc lớp này sẽ được chuyển thành "Chưa phân lớp".`)) return;
+      appData.students.forEach(s => { if (s.classId === classId) s.classId = ''; });
+      appData.classes = appData.classes.filter(c => c.id !== classId);
+      saveData();
+      render();
+    }
+
+    function showAddStudentModal() {
+      const code = prompt('Nhập mã học sinh (VD: DBSS26-016):');
+      if (!code) return;
+      const name = prompt('Nhập họ và tên học sinh:');
+      if (!name) return;
+      const classId = appData.classes[0]?.id || '';
+      appData.students.push({
+        id: 'stu-' + Date.now(),
+        code: code.trim().toUpperCase(),
+        name: name.trim(),
+        classId: classId,
+        status: 'Đang học',
+        birth: '2008-01-01',
+        gender: 'Nam',
+        notes: ''
+      });
+      saveData();
+      render();
+    }
+
+    function deleteStudent(studentId) {
+      const student = appData.students.find(s => s.id === studentId);
+      if (!student) return;
+      if (!confirm(`Bạn có chắc chắn muốn xóa học sinh "${student.name}" không?`)) return;
+      appData.students = appData.students.filter(s => s.id !== studentId);
+      saveData();
+      render();
+    }
+
+    function quickUpdateProgress(taskId, studentId) {
+      const task = appData.tasks.find(t => t.id === taskId);
+      if (!task || !task.progress) return;
+      const cur = task.progress[studentId]?.percent || 0;
+      const val = prompt('Nhập tiến độ mới (0 - 100):', cur);
+      if (val === null) return;
+      const pct = Math.min(100, Math.max(0, parseInt(val) || 0));
+      task.progress[studentId] = {
+        percent: pct,
+        status: pct === 100 ? 'Hoàn thành' : 'Đang thực hiện'
+      };
+      saveData();
+      render();
+    }
+
+    function showAddTaskModal() {
+      const title = prompt('Nhập tên nhiệm vụ / chuyên đề:');
+      if (!title) return;
+      const subject = prompt('Nhập tên môn học (Ngữ văn, Toán, v.v.):', 'Ngữ văn');
+      const clsId = appData.classes[0]?.id || '';
+      const progress = {};
+      appData.students.filter(s => s.classId === clsId).forEach(s => {
+        progress[s.id] = { percent: 0, status: 'Đang thực hiện' };
+      });
+      appData.tasks.push({
+        id: 'tsk-' + Date.now(),
+        title: title.trim(),
+        subject: subject.trim(),
+        classId: clsId,
+        date: new Date().toISOString().slice(0, 10),
+        due: '',
+        progress: progress
+      });
+      saveData();
+      render();
+    }
+
+    /* XUẤT CSV CÓ UTF-8 BOM */
+    function exportCsvStudents() {
+      let csv = '\uFEFFSTT,Mã học sinh,Họ và tên,Lớp,Tiến độ,Trạng thái,Ghi chú\r\n';
+      appData.students.forEach((s, idx) => {
+        const cls = appData.classes.find(c => c.id === s.classId);
+        const prog = getStudentProgress(s.id);
+        csv += `${idx + 1},"${s.code}","${s.name}","${cls ? cls.name : 'Chưa phân lớp'}","${prog !== null ? prog + '%' : 'Chưa có'}","${s.status}","${s.notes || ''}"\r\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `DanhSach_HocSinh_DBSS_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+    }
+
+    /* SAO LƯU JSON */
+    function exportDataJson() {
+      const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `SaoLuu_QuanTriLopHoc_DBSS_${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+    }
+
+    // Khởi chạy giao diện
+    render();
+  </script>
+</body>
+</html>
